@@ -1,10 +1,16 @@
 'use client'
 
-import { useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 const ContactForm = ({ setContacts }) => {
     const [form, setForm] = useState({ nome: "", email: "", telefone: "" });
     const [errors, setErrors] = useState({})
+    const inputRef = useRef(null)
+
+    useEffect(() => {
+        inputRef.current.focus()
+    }, [])
+
 
     const validate = () => {
         const newErrors = {};
@@ -15,8 +21,9 @@ const ContactForm = ({ setContacts }) => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
+        inputRef.current.focus()
 
         const newErrors = validate()
 
@@ -27,7 +34,7 @@ const ContactForm = ({ setContacts }) => {
 
         setContacts((prev) => [...prev, { ...form, id: Date.now() }]);
         setForm({ nome: "", email: "", telefone: "" });
-    };
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,6 +51,7 @@ const ContactForm = ({ setContacts }) => {
                     Nome <span className="text-red-500">*</span>
                 </label>
                 <input
+                    ref={inputRef}
                     name="nome"
                     className={`w-full border rounded px-3 py-2 text-gray-900 ${errors.nome ? "border-red-500" : "border-gray-300"
                         }`}
