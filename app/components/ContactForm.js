@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import contactsApi from "../services/contactsApi";
 
 const ContactForm = ({ setContacts }) => {
     const [form, setForm] = useState({ nome: "", email: "", telefone: "" });
@@ -21,20 +22,41 @@ const ContactForm = ({ setContacts }) => {
         return newErrors;
     };
 
-    const handleSubmit = useCallback((e) => {
-        e.preventDefault();
-        inputRef.current.focus()
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     inputRef.current.focus()
 
+    //     const newErrors = validate()
+
+    //     if (Object.keys(newErrors).length > 0) {
+    //         setErrors(newErrors);
+    //         return;
+    //     }
+
+    //     setContacts((prev) => [...prev, { ...form, id: Date.now() }]);
+    //     setForm({ nome: "", email: "", telefone: "" });
+    // };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const newErrors = validate()
+
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        setContacts((prev) => [...prev, { ...form, id: Date.now() }]);
-        setForm({ nome: "", email: "", telefone: "" });
-    });
+        try {
+            const response = await contactsApi.post('/contatos', form)
+            setContacts((prev) => [...prev, response.data]);
+            setForm({ nome: "", email: "", telefone: "" });
+            inputRef.current.focus()
+        } catch (error) {
+            console.error(error)
+        }
+
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;

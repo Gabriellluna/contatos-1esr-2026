@@ -4,6 +4,7 @@ import ContactForm from "./components/ContactForm";
 import ContactList from "./components/ContactList";
 import FilterInput from "./components/FilterInput";
 import Statistics from "./components/Statistics";
+import contactsApi from "./services/contactsApi";
 
 const HomePage = () => {
   const [contacts, setContacts] = useState([]);
@@ -47,6 +48,21 @@ const HomePage = () => {
       setContacts(JSON.parse(savedContacts));
     }
     setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        const response = await contactsApi.get('/contatos')
+        console.log("reponse: ", response)
+        setContacts(response.data)
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadContacts()
   }, []);
 
   useEffect(() => {
